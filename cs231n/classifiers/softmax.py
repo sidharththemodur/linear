@@ -29,7 +29,27 @@ def softmax_loss_naive(W, X, y, reg):
   # here, it is easy to run into numeric instability. Don't forget the        #
   # regularization!                                                           #
   #############################################################################
-  pass
+  
+  for i in range(0, X.shape[0]):
+    score_sum = 0
+    correct_score = 0
+    for j in range(0, W.shape[1]):
+        score = np.exp(image * W[:,j])
+        score_sum += score
+        if j == y[i]:
+            correct_score = score
+    p = correct_score / score_sum
+    loss -= np.ln(p)
+    for j in range(0, W.shape[1]):
+        dW[:, j] += p * X[i]
+        if j == y[i]:
+            dW[:, j] -= X[i]
+  loss /= X.shape[0]
+    
+  # Regularization
+  loss += reg * np.sum(W * W)
+  dW += .5(reg * W)
+    
   #############################################################################
   #                          END OF YOUR CODE                                 #
   #############################################################################
@@ -53,7 +73,15 @@ def softmax_loss_vectorized(W, X, y, reg):
   # here, it is easy to run into numeric instability. Don't forget the        #
   # regularization!                                                           #
   #############################################################################
-  pass
+  scores = np.exp(X.dot(W))
+  P = scores / scores.sum(axis = 1)
+  loss = np.sum(np.log(p)) / X.shape[0]
+  dW = (X.T).dot(P)
+  dW[:, y] -= X
+  
+  # Regularization
+  loss += reg * np.sum(W * W)
+  dW += .5(reg * W)
   #############################################################################
   #                          END OF YOUR CODE                                 #
   #############################################################################
